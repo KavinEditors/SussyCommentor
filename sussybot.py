@@ -1,8 +1,10 @@
 #inatall dependies using cmd/terminal  ↙
 #pip install -r requirements.txt
-#set your bot token and open ai api key in .env
+#set your bot token and open ai API key in .env
+#get your open ai API key in https://platform.openai.com/settings/organization/api-keys
+#create your bot in Discord Developer Potral in https://discord.com/developers/applications
 #save everything 
-#Use 'python sussybot.py' in vsc terminal to run it
+#use 'python sussybot.py' in vsc terminal to run it
 
 import discord
 from discord.ext import commands
@@ -17,7 +19,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
 
-# Set up intents and bot
+# Set up intents and bot in .env
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
@@ -42,7 +44,7 @@ async def sussyhelp(ctx):
 async def generate_ai_response(prompt):
     try:
         response = openai.chat.completions.create(
-            model="gpt-4",  # or "gpt-3.5-turbo"
+            model="gpt-3.5-turbo",  # or "gpt-4" if paid
             messages=[
                 {"role": "system", "content": "You're a funny and sarcastic Discord bot who comments like a meme lord."},
                 {"role": "user", "content": prompt}
@@ -53,7 +55,7 @@ async def generate_ai_response(prompt):
         return response.choices[0].message.content.strip()
     except Exception as e:
         print("Error with OpenAI:", e)
-        return "Oops! My AI brain tripped. Try again later."
+        return "Oops! My brain tripped. Try again later."
 
 @bot.command()
 async def comment(ctx):
