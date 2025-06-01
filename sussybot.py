@@ -1,3 +1,9 @@
+#inatall dependies using cmd/terminal  ↙
+#pip install -r requirements.txt
+#set your bot token and open ai api key in .env
+#save everything 
+#Use 'python sussybot.py' in vsc terminal to run it
+
 import discord
 from discord.ext import commands
 import openai
