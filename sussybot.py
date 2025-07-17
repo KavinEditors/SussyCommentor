@@ -1,25 +1,20 @@
-#inatall dependies using cmd/terminal  ↙
-#pip install -r requirements.txt
-#set your bot token and open ai API key in .env
-#get your open ai API key in https://platform.openai.com/settings/organization/api-keys
-#create your bot in Discord Developer Potral in https://discord.com/developers/applications
-#save everything 
-#use 'python sussybot.py' in vsc terminal to run it
-
 import discord
 from discord.ext import commands
-import openai
 import os
 import random
 from dotenv import load_dotenv
+import google.generativeai as genai
 
 # Load API keys from .env
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Set up intents and bot in .env
+# Configure Gemini
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-pro")
+
+# Set up intents
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
@@ -34,35 +29,30 @@ async def sussyhelp(ctx):
     help_text = (
         "**🕵️‍♂️ SussyComentor Commands:**\n"
         "`❗!sussyhelp` – Show this help message\n"
-        "`❗!comment` – Funny comment on a message\n"
-        "`❗!roast` – Roast of replied message \n"
-        "`❗!memecomment` – Meme-style over-the-top AI response\n"
+        "`❗!comment` – Brutally sarcastic comment on a message\n"
+        "`❗!roast` – Ruthless roast of a replied message\n"
+        "`❗!memecomment` – Savage meme-style insult\n"
         "`❗!SUSpercentage` – Rate sus level (1–100%)"
     )
     await ctx.send(help_text)
 
 async def generate_ai_response(prompt):
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # or "gpt-4" if paid
-            messages=[
-                {"role": "system", "content": "You're a funny and sarcastic Discord bot who comments like a meme lord."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=80,
-            temperature=0.95
-        )
-        return response.choices[0].message.content.strip()
+        response = model.generate_content(prompt)
+        return response.text.strip()
     except Exception as e:
-        print("Error with OpenAI:", e)
-        return "Oops! My brain tripped. Try again later."
+        print("Error with Gemini:", e)
+        return "Oops! My Gemini brain just glitched. Try again later."
 
 @bot.command()
 async def comment(ctx):
     if ctx.message.reference:
         replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         user = replied_msg.author.mention
-        prompt = f"Write a witty and sarcastic comment about this message: \"{replied_msg.content}\""
+        prompt = (
+            f"Write a brutally sarcastic, highly rude, and insulting comment about this message: "
+            f"\"{replied_msg.content}\". Be extremely disrespectful and savage, like a toxic gamer roasting someone on Discord."
+        )
         comment = await generate_ai_response(prompt)
         await ctx.send(f"{user} {comment}")
     else:
@@ -73,7 +63,10 @@ async def roast(ctx):
     if ctx.message.reference:
         replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         user = replied_msg.author.mention
-        prompt = f"Roast this message in a sarcastic and humorous way: \"{replied_msg.content}\""
+        prompt = (
+            f"Roast this message with maximum sarcasm, rudeness, and dark humor: "
+            f"\"{replied_msg.content}\". Be as brutally honest and funny as possible, like you're humiliating them in front of the entire server."
+        )
         roast = await generate_ai_response(prompt)
         await ctx.send(f"{user} {roast}")
     else:
@@ -85,8 +78,8 @@ async def memecomment(ctx):
         replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         user = replied_msg.author.mention
         prompt = (
-            f"Generate a meme-style, exaggerated, over-the-top humorous comment for this message: "
-            f"\"{replied_msg.content}\". Use Gen Z humor, emoji, caps if needed."
+            f"Generate a meme-style, exaggerated, over-the-top, savage and toxic comment for this message: "
+            f"\"{replied_msg.content}\". Use Gen Z humor, emoji, all caps, and be hilariously rude. The goal is to make the person look stupid in the funniest way possible."
         )
         meme_reply = await generate_ai_response(prompt)
         await ctx.send(f"{user} {meme_reply}")
