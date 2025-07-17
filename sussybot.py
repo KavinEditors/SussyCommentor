@@ -4,17 +4,16 @@ import os
 import random
 from dotenv import load_dotenv
 import google.generativeai as genai
+from flask import Flask
+from threading import Thread
 
-# Load API keys from .env
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Configure Gemini
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
 
-# Set up intents
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
@@ -91,4 +90,19 @@ async def SUSpercentage(ctx):
     percent = random.randint(1, 100)
     await ctx.send(f"{percent}% sus 😳")
 
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# Start webserver + bot
+keep_alive()
 bot.run(DISCORD_TOKEN)
